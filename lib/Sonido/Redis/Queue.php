@@ -1,14 +1,15 @@
 <?php
 
-namespace Sonido\Backend;
+namespace Sonido\Redis;
 
+use Sonido\Job\QueueInterface;
 use Sonido\Stat\RedisStat;
 use Sonido\Status\RedisStatus;
 use Credis_Client;
 use Credis_Cluster;
 use CredisException;
 
-class RedisBackend implements BackendInterface
+class Queue implements QueueInterface
 {
     public $config;
 

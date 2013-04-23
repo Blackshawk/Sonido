@@ -1,14 +1,15 @@
 <?php
 
-namespace Sonido\Stat;
+namespace Sonido\Redis;
+ 
+use Sonido\Job\QueueInterface;
+use Sonido\Stat\StatInterface;
 
-use Sonido\Backend\BackendInterface;
-
-class RedisStat
+class Stat implements StatInterface
 {
     public $backend;
 
-    public function __construct(BackendInterface $backend)
+    public function __construct(QueueInterface $backend)
     {
         $this->backend = $backend;
     }

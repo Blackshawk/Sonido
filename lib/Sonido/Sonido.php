@@ -7,7 +7,9 @@ use Evenement\EventEmitter;
 use Sonido\Manager\JobManager;
 use Sonido\Manager\QueueManager;
 use Sonido\Manager\WorkerManager;
-use Sonido\Backend\RedisBackend;
+use Sonido\Redis\Queue as RedisQueue;
+use Spork\ProcessManager as SporkProcessManager;
+use Symfony\Component\Process\Process;
 
 class Sonido
 {
@@ -19,11 +21,11 @@ class Sonido
         $container = new Container;
 
         $container->register('event', function() {
-            return new EventEmitter($bar);
+            return new EventEmitter();
         });
 
-        $container->register('backend', function() use ($config) {
-            return new RedisBackend($config ?: array(
+        $container->register('backend', function() use ($config) { //this needs refactoring so Redis isn't hardcoded
+            return new RedisQueue($config ?: array(
                 'server' => 'localhost:6379',
             ));
         });
@@ -50,6 +52,10 @@ class Sonido
 
         $container->register('worker.daemon', function() use ($container) {
             return new WorkerDaemon($container->resolve('worker.manager'), $container->resolve('job.manager'));
+        });
+
+        $container->register('spork', function() use ($container) {
+           return new SporkProcessManager();
         });
 
         $this->config = $config;
