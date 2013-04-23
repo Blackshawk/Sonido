@@ -2,13 +2,13 @@
 
 namespace Sonido\Stat;
 
-class StatInterface
+interface StatInterface
 {
-    public function get();
+    function get($stat);
 
-    public function clear();
+    function clear($stat);
 
-    public function increment();
+    function increment($stat, $by);
 
-    public function decrement();
+    function decrement($stat, $by);
 }
