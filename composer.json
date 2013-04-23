@@ -25,6 +25,8 @@
         "evenement/evenement": "1.0.*",
         "orno/di": "1.2.*",
 
+        "kriswallsmith/spork": "0.2.*",
+
         "symfony/console": "2.2.*",
         "symfony/process": "2.2.*"
     },

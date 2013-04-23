@@ -2,7 +2,6 @@
 
 namespace Sonido\Model;
 
-use Exception;
 use Sonido\Job\Strategy\Fork;
 use Sonido\Job\Strategy\InProcess;
 use Sonido\Job\Strategy\StrategyInterface;
@@ -23,6 +22,9 @@ class Worker
 
     public $shutdown = false;
 
+    /**
+     * @var StrategyInterface
+     */
     public $jobStrategy;
 
     public $currentJob;

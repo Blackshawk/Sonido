@@ -11,8 +11,14 @@ class Fork extends InProcess
 {
     public $child;
 
+    /**
+     * @var Worker
+     */
     public $worker;
 
+    /**
+     * @var Platform
+     */
     protected $platform;
 
     public function __construct()
@@ -20,6 +26,9 @@ class Fork extends InProcess
         $this->platform = new Platform;
     }
 
+    /**
+     * @param Worker $worker
+     */
     public function setWorker(Worker $worker)
     {
         $this->worker = $worker;
