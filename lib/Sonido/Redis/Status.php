@@ -1,10 +1,10 @@
 <?php
 
-namespace Sonido\Status;
+namespace Sonido\Redis;
 
-use Sonido\Backend\BackendInterface;
+use Sonido\Status\StatusInterface;
 
-class RedisStatus
+class Status implements StatusInterface
 {
     const STATUS_WAITING = 1;
     const STATUS_RUNNING = 2;
@@ -20,7 +20,7 @@ class RedisStatus
         self::STATUS_COMPLETE,
     );
 
-    public function __construct(BackendInterface $backend, $id)
+    public function __construct(Queue $backend, $id)
     {
         $this->backend = $backend;
         $this->id = $id;

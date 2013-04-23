@@ -1,8 +1,8 @@
 <?php
 
-namespace Sonido\Backend;
+namespace Sonido\Job;
 
-interface BackendInterface
+interface QueueInterface
 {
     public function setNamespace($namespace);
 
