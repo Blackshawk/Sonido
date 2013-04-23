@@ -2,8 +2,6 @@
 
 namespace Sonido\Model;
 
-use Sonido\Exception;
-
 class Job
 {
     public $class;

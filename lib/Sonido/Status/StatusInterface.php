@@ -8,7 +8,7 @@ interface StatusInterface
 
     public function isTracking();
 
-    public function update();
+    public function update($status);
 
     public function get();
 

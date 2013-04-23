@@ -16,7 +16,7 @@ class TestCase extends \PHPUnit_Framework_TestCase
         preg_match('#^\s*port\s+([0-9]+)#m', $config, $matches);
         $this->redis = new Credis_Client('localhost', $matches[1]);
 
-        $this->sonido = new \Sonido\Sonido(array(
+        $this->sonido = new Sonido(array(
             'server'   => 'localhost:' . $matches[1],
         ));
     }

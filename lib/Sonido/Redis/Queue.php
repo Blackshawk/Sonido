@@ -141,7 +141,6 @@ class Queue implements QueueInterface
     {
         $namespace = $this->getnamespace();
 
-        $string = false;
         if (substr($string, 0, strlen($namespace)) == $namespace) {
             $string = substr($string, strlen($namespace), strlen($string) );
         }

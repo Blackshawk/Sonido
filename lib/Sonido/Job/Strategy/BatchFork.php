@@ -2,7 +2,7 @@
 
 namespace Sonido\Job\Strategy;
 
-use Sonido\Mode\Job;
+use Sonido\Model\Job;
 
 class BatchFork extends Fork
 {

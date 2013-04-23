@@ -4,7 +4,7 @@ namespace Sonido\Job\Strategy;
 
 use EBernhardson\FastCGI\Client;
 use EBernhardson\FastCGI\CommunicationException;
-use Sonido\Mode\Worker;
+use Sonido\Model\Worker;
 use Sonido\Model\Job;
 use Sonido\Exception;
 
