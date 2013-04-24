@@ -27,6 +27,8 @@
 
         "kriswallsmith/spork": "0.2.*",
 
+        "monolog/monolog": "1.5.*",
+
         "symfony/console": "2.2.*",
         "symfony/process": "2.2.*"
     },
