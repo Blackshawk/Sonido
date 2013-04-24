@@ -10,7 +10,6 @@ use Sonido\Job\Strategy\StrategyInterface;
 use Sonido\Manager\JobManager;
 use Sonido\Manager\QueueManager;
 use Sonido\Manager\WorkerManager;
-use Sonido\Redis\Queue as RedisQueue;
 use Spork\ProcessManager as SporkProcessManager;
 use Symfony\Component\Process\Process;
 
