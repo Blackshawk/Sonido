@@ -3,8 +3,6 @@
 namespace Sonido\Redis;
 
 use Sonido\Job\QueueInterface;
-use Sonido\Stat\RedisStat;
-use Sonido\Status\RedisStatus;
 use Credis_Client;
 use Credis_Cluster;
 use CredisException;
@@ -161,7 +159,7 @@ class Queue implements QueueInterface
     public function getStat()
     {
         if (! $this->stat) {
-            $this->stat = new RedisStat($this);
+            $this->stat = new Stat($this);
         }
 
         return $this->stat;
@@ -170,7 +168,7 @@ class Queue implements QueueInterface
     public function getStatus()
     {
         if (! $this->stat) {
-            $this->stat = new RedisStatus($this);
+            $this->stat = new Stat($this);
         }
 
         return $this->stat;

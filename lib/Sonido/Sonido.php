@@ -4,6 +4,9 @@ namespace Sonido;
 
 use Orno\Di\Container;
 use Evenement\EventEmitter;
+use Psr\Log\LoggerInterface;
+use Sonido\Job\QueueInterface;
+use Sonido\Job\Strategy\StrategyInterface;
 use Sonido\Manager\JobManager;
 use Sonido\Manager\QueueManager;
 use Sonido\Manager\WorkerManager;
@@ -13,10 +16,20 @@ use Symfony\Component\Process\Process;
 
 class Sonido
 {
+    /**
+     * @var array
+     */
     protected $config;
-    private $container;
 
-    public function __construct(array $config = array())
+    /**
+     * @var \Orno\Di\Container
+     */
+    protected $container;
+
+
+    protected $logger;
+
+    public function __construct(QueueInterface $queue, StrategyInterface $strategy, LoggerInterface $logger, array $config = array())
     {
         $container = new Container;
 
@@ -24,11 +37,7 @@ class Sonido
             return new EventEmitter();
         });
 
-        $container->register('backend', function() use ($config) { //this needs refactoring so Redis isn't hardcoded
-            return new RedisQueue($config ?: array(
-                'server' => 'localhost:6379',
-            ));
-        });
+        $container->register('backend', $queue, true);
 
         $container->register('stat', function() use ($container) {
             return $container->resolve('backend')->getStat();
@@ -58,21 +67,26 @@ class Sonido
            return new SporkProcessManager();
         });
 
+        $container->register('logger', $logger, true);
+
         $this->config = $config;
         $this->container = $container;
     }
 
-    public function get($service)
-    {
-        return $this->container->resolve($service);
-    }
-
+    /**
+     *
+     * @param $class
+     * @param array $arguments
+     * @param string $queue
+     * @param bool $trackStatus
+     * @return mixed
+     */
     public function enqueue($class, $arguments = array(), $queue = '*', $trackStatus = false)
     {
-        $result = $this->get('job.manager')->create($class, $arguments, $queue, $trackStatus);
+        $result = $this->container->resolve('job.manager')->create($class, $arguments, $queue, $trackStatus);
 
         if ($result) {
-            $this->get('event')->emit('afterEnqueue', array(
+            $this->container->resolve('event')->emit('afterEnqueue', array(
                 'class'      => $class,
                 'arguments'  => $arguments,
                 'queue'      => $queue,
