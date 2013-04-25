@@ -1,7 +1,7 @@
 <?php
 
-namespace Sonido\Redis;
- 
+namespace Sonido\Adapter\Redis;
+
 use Sonido\Job\QueueInterface;
 use Sonido\Stat\StatInterface;
 
