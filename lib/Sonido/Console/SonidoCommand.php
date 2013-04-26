@@ -1,10 +1,10 @@
 <?php
 
 namespace Sonido\Console;
- 
+
 use Monolog\Logger;
 use Sonido\Job\Strategy;
-use Sonido\Redis\Queue as RedisQueue;
+use Sonido\Adapter\Redis\Queue as RedisQueue;
 use Sonido\Sonido;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,6 +64,10 @@ class SonidoCommand extends Command
         $output->writeln(sprintf('Sonido will create no more than %s %s.', $input->getOption('children'), $description));
 
 
-        $sonido = new Sonido(new RedisQueue(), $jobStrategy, new Logger('sonido'));
+        $sonido = new Sonido(new RedisQueue(), new Logger('sonido'));
+
+        // Fetch a worker daemon
+        // Set the job strategy
+        // Call daemonize() or work()
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sonido\Redis;
+namespace Sonido\Adapter\Redis;
 
 use Sonido\Status\StatusInterface;
 

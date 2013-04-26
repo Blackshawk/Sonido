@@ -6,7 +6,6 @@ use Orno\Di\Container;
 use Evenement\EventEmitter;
 use Psr\Log\LoggerInterface;
 use Sonido\Job\QueueInterface;
-use Sonido\Job\Strategy\StrategyInterface;
 use Sonido\Manager\JobManager;
 use Sonido\Manager\QueueManager;
 use Sonido\Manager\WorkerManager;
@@ -28,7 +27,7 @@ class Sonido
 
     protected $logger;
 
-    public function __construct(QueueInterface $queue, StrategyInterface $strategy, LoggerInterface $logger, array $config = array())
+    public function __construct(QueueInterface $queue, LoggerInterface $logger, array $config = array())
     {
         $container = new Container;
 
