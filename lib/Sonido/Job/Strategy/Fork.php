@@ -2,37 +2,14 @@
 
 namespace Sonido\Job\Strategy;
 
-use Sonido\Model\Worker;
+use Sonido\Job\Exception\DirtyExitException;
+use Sonido\Worker\WorkerInterface;
 use Sonido\Model\Job;
 use Sonido\Platform;
-use Sonido\Job\DirtyExitException;
 
-class Fork extends InProcess
+class Fork extends Base
 {
     public $child;
-
-    /**
-     * @var Worker
-     */
-    public $worker;
-
-    /**
-     * @var Platform
-     */
-    protected $platform;
-
-    public function __construct()
-    {
-        $this->platform = new Platform;
-    }
-
-    /**
-     * @param Worker $worker
-     */
-    public function setWorker(Worker $worker)
-    {
-        $this->worker = $worker;
-    }
 
     public function perform(Job $job)
     {
@@ -63,17 +40,16 @@ class Fork extends InProcess
     public function shutdown()
     {
         if (!$this->child) {
-            fwrite(STDOUT, 'No child to kill.' . PHP_EOL);
-
+            $this->output->writeln('No child process to kill.');
             return;
         }
 
-        fwrite(STDOUT, 'Killing child at ' . $this->child . PHP_EOL);
+        //Still need to factor platform out
         if ($this->platform->kill($this->child)) {
-            fwrite(STDOUT, 'Killing child at ' . $this->child . PHP_EOL);
+            $this->output->writeln(sprintf('Killing child process at %s.', $this->child));
             $this->child = null;
         } else {
-            fwrite(STDOUT, 'Child ' . $this->child . ' not found, restarting.' . PHP_EOL);
+            $this->output->writeln(sprintf('Child process `%s` not found; restarting.', $this->child));
             $this->worker->shutdown();
         }
     }

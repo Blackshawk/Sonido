@@ -5,34 +5,15 @@ namespace Sonido\Job\Strategy;
 use Sonido\Model\Worker;
 use Sonido\Model\Job;
 
-class InProcess implements StrategyInterface
+class InProcess extends Base
 {
-    /**
-     * @var Worker
-     */
-    public $worker;
-
-    /**
-     * @param Worker $worker
-     */
-    public function setWorker(Worker $worker)
-    {
-        $this->worker = $worker;
-    }
-
     /**
      * @param Job $job
      */
     public function perform(Job $job)
     {
-        $status = 'Processing ' . $job->queue . ' since ' . strftime('%F %T');
-        $this->worker->perform($job);
-    }
+        $this->output->writeln(sprintf('Processing %s since %s.', $job->queue, strftime('%F %T')));
 
-    /**
-     *
-     */
-    public function shutdown()
-    {
+        call_user_func_array($job->getClass(), $job->getArguments());
     }
 }
