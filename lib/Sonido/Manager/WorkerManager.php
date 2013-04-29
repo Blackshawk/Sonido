@@ -4,7 +4,6 @@ namespace Sonido\Manager;
 
 use Sonido\Model\Job;
 use Sonido\Model\Worker;
-use Sonido\Job\Status;
 use Sonido\Job\DirtyExitException;
 
 class WorkerManager
@@ -90,20 +89,20 @@ class WorkerManager
 
     public function register(Worker $worker)
     {
-        $this->backend->sadd('workers', (string) $worker);
-        $this->backend->set('worker:' . (string) $worker . ':started', strftime('%a %b %d %H:%M:%S %Z %Y'));
+        $this->backend->redis->sadd('workers', (string) $worker);
+        $this->backend->redis->set('worker:' . (string) $worker . ':started', strftime('%a %b %d %H:%M:%S %Z %Y'));
     }
 
     public function unregister(Worker $worker)
     {
         if (is_object($worker->getCurrentJob())) {
-            $this->jobManager->fail($worker->getCurrentJob(), new DirtyExitException);
+            $this->jobManager->fail($worker->getCurrentJob(), new \Sonido\Job\Exception\DirtyExitException);
         }
 
         $id = (string) $worker;
-        $this->backend->srem('workers', $id);
-        $this->backend->del('worker:' . $id);
-        $this->backend->del('worker:' . $id . ':started');
+        $this->backend->redis->srem('workers', $id);
+        $this->backend->redis->del('worker:' . $id);
+        $this->backend->redis->del('worker:' . $id . ':started');
 
         // TODO: Clear the processed count
         // TODO: Clear the failed count
@@ -111,7 +110,7 @@ class WorkerManager
 
     public function exists($workerId)
     {
-        return (bool) $this->backend->sismember('workers', $workerId);
+        return (bool) $this->backend->redis->sismember('workers', $workerId);
     }
 
     public function workingOn(Worker $worker, Job $job)
@@ -127,7 +126,7 @@ class WorkerManager
             'payload' => (string) $job
         ));
 
-        $this->backend->set('worker:' . $worker, $data);
+        $this->backend->redis->set('worker:' . $worker, $data);
     }
 
     public function doneWorking(Worker $worker)
@@ -137,7 +136,7 @@ class WorkerManager
         // TODO: Increment the processed count
         // TODO: Increment the processed count for the worker
 
-        $this->backend->del('worker:' . (string) $worker);
+        $this->backend->redis->del('worker:' . (string) $worker);
     }
 
     public function getJobManager()

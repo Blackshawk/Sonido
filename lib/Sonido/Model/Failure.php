@@ -2,6 +2,8 @@
 
 namespace Sonido\Model;
 
+use Sonido\Worker\WorkerInterface;
+
 class Failure
 {
     public $failedAt;
@@ -18,7 +20,7 @@ class Failure
 
     public $queue;
 
-    public function __construct(Job $job, Worker $worker, Queue $queue, $exception)
+    public function __construct(Job $job, WorkerInterface $worker, Queue $queue, $exception)
     {
         $this->failedAt = strftime('%a %b %d %H:%M:%S %Z %Y');
         $this->payload = (string) $job;
