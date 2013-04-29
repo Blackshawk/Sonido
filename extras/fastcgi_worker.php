@@ -9,7 +9,7 @@ if (!isset($_SERVER['SONIDO_JOB'])) {
 }
 
 require_once dirname(__FILE__).'/../lib/Sonido/Sonido.php';
-require_once dirname(__FILE__).'/../lib/Sonido/Worker.php';
+require_once dirname(__FILE__) . '/../lib/Sonido/Worker.php';
 
 if (isset($_SERVER['REDIS_BACKEND'])) {
     Sonido\Sonido::setBackend($_SERVER['REDIS_BACKEND']);
