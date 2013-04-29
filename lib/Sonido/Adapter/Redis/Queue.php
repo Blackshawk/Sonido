@@ -2,10 +2,9 @@
 
 namespace Sonido\Adapter\Redis;
 
+use Predis\Client as PredisClient;
 use Sonido\Job\QueueInterface;
-use Credis_Client;
-use Credis_Cluster;
-use CredisException;
+use Sonido\Job\Statistic;
 
 class Queue implements QueueInterface
 {
@@ -15,111 +14,25 @@ class Queue implements QueueInterface
 
     public $driver;
 
-    public $defaultNamespace = 'resque:';
+    public $defaultNamespace = 'sonido:';
 
-    public $keyCommands = array(
-        'exists',
-        'del',
-        'type',
-        'keys',
-        'expire',
-        'ttl',
-        'move',
-        'set',
-        'setex',
-        'get',
-        'getset',
-        'setnx',
-        'incr',
-        'incrby',
-        'decr',
-        'decrby',
-        'rpush',
-        'lpush',
-        'llen',
-        'lrange',
-        'ltrim',
-        'lindex',
-        'lset',
-        'lrem',
-        'lpop',
-        'rpop',
-        'sadd',
-        'srem',
-        'spop',
-        'scard',
-        'sismember',
-        'smembers',
-        'srandmember',
-        'zadd',
-        'zrem',
-        'zrange',
-        'zrevrange',
-        'zrangebyscore',
-        'zcard',
-        'zscore',
-        'zremrangebyscore',
-        'sort'
-    );
+    public $redis;
 
-    public function __construct(array $config = array())
+    public function __construct(PredisClient $redis = null, array $config = array())
     {
-        $this->config = $config;
+        if(is_null($redis)) {
+            $redis = new PredisClient(); //make this configurable a bit
+        }
 
-        $this->connect($config);
+        $this->redis = $redis;
+
+        $this->config = $config;
     }
 
     public function reconnect()
     {
-        $this->close();
-        $this->connect($this->config);
-    }
-
-    public function connect($config)
-    {
-        $server = (! empty($config['server'])) ? $config['server'] : 'localhost:6379';
-
-        if (is_array($server)) {
-            $this->driver = new Credis_Cluster($server);
-        } else {
-            $port = null;
-            $password = null;
-            $host = $server;
-
-            if (strpos($server, '/') === false) {
-                $parts = explode(':', $server);
-                if (isset($parts[1])) {
-                    $port = $parts[1];
-                }
-                $host = $parts[0];
-            } elseif (strpos($server, 'redis://') !== false) {
-                list($userpwd,$hostport) = explode('@', $server);
-                $userpwd = substr($userpwd, strpos($userpwd, 'redis://')+8);
-                list($host, $port) = explode(':', $hostport);
-                list(,$password) = explode(':', $userpwd);
-            }
-
-            $this->driver = new Credis_Client($host, $port);
-            if (isset($password)) {
-                $this->driver->auth($password);
-            }
-        }
-
-        if (! empty($config['database'])) {
-            $this->driver->select($config['database']);
-        }
-    }
-
-    public function __call($name, $arguments)
-    {
-        if (in_array($name, $this->keyCommands)) {
-            $arguments[0] = $this->defaultNamespace . $arguments[0];
-        }
-        try {
-            return $this->driver->__call($name, $arguments);
-        } catch (CredisException $e) {
-            return false;
-        }
+        $this->redis->disconnect();
+        $this->redis->connect();
     }
 
     public function setNamespace($namespace)
@@ -148,7 +61,8 @@ class Queue implements QueueInterface
 
     public function pop($queue)
     {
-        $item = $this->lpop('queue:' . $queue);
+        $item = $this->redis->lpop('queue:' . $queue);
+
         if (!$item) {
             return null;
         }
@@ -159,7 +73,7 @@ class Queue implements QueueInterface
     public function getStat()
     {
         if (! $this->stat) {
-            $this->stat = new Stat($this);
+            $this->stat = new Statistic($this);
         }
 
         return $this->stat;
@@ -168,7 +82,7 @@ class Queue implements QueueInterface
     public function getStatus()
     {
         if (! $this->stat) {
-            $this->stat = new Stat($this);
+            $this->stat = new Status($this, "????");
         }
 
         return $this->stat;

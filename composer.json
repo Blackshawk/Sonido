@@ -29,6 +29,8 @@
 
         "monolog/monolog": "1.5.*",
 
+        "predis/predis": "0.8.*",
+
         "symfony/console": "2.2.*",
         "symfony/event-dispatcher": "2.2.*",
         "symfony/process": "2.2.*"
