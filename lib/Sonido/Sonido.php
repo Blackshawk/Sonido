@@ -9,6 +9,7 @@ use Sonido\Job\QueueInterface;
 use Sonido\Manager\JobManager;
 use Sonido\Manager\QueueManager;
 use Sonido\Manager\WorkerManager;
+use Sonido\Worker\Daemon;
 use Spork\ProcessManager as SporkProcessManager;
 use Symfony\Component\Process\Process;
 
@@ -53,22 +54,27 @@ class Sonido
             return new WorkerManager($container->resolve('backend'), $container->resolve('job.manager'));
         });
 
-        $container->register('worker', function() use ($container) {
+        /*$container->register('worker', function() use ($container) {
             return new Worker($container->resolve('worker.manager'), $container->resolve('job.manager'));
         });
 
         $container->register('worker.daemon', function() use ($container) {
-            return new WorkerDaemon($container->resolve('worker.manager'), $container->resolve('job.manager'));
+            return new Daemon($container->resolve('worker.manager'), $container->resolve('job.manager'));
         });
 
         $container->register('spork', function() use ($container) {
            return new SporkProcessManager();
-        });
+        });*/
 
         $container->register('logger', $logger, true);
 
         $this->config = $config;
         $this->container = $container;
+    }
+
+    public function get($service)
+    {
+        return $this->container->resolve($service);
     }
 
     /**

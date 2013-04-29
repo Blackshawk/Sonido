@@ -4,8 +4,10 @@ namespace Sonido\Console;
 
 use Monolog\Logger;
 use Sonido\Job\Strategy;
-use Sonido\Adapter\Redis\Queue as RedisQueue;
+use Sonido\Adapter;
+use Sonido\Manager\JobManager;
 use Sonido\Sonido;
+use Sonido\Worker;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -46,28 +48,26 @@ class SonidoCommand extends Command
         switch($input->getOption('strategy')) {
             case 'thread':
                 $description = 'threads';
-                $jobStrategy = new Strategy\InProcess();
+                $strategy = new Strategy\InProcess($output);
                 break;
 
             case 'batchfork':
                 $description = 'batched forks.';
-                $jobStrategy = new Strategy\BatchFork();
+                $strategy = new Strategy\BatchFork($output);
                 break;
 
             case 'fork':
             default:
                 $description = 'forked processes';
-                $jobStrategy = new Strategy\Fork();
+                $strategy = new Strategy\Fork($output);
         }
 
         $output->writeln('<question>Welcome to Sonido 0.1.</question>');
         $output->writeln(sprintf('Sonido will create no more than %s %s.', $input->getOption('children'), $description));
 
 
-        $sonido = new Sonido(new RedisQueue(), new Logger('sonido'));
-
-        // Fetch a worker daemon
-        // Set the job strategy
-        // Call daemonize() or work()
+        $jobManager = new JobManager(new Adapter\Redis\Queue());
+        $worker = new Worker\Daemon($strategy, $jobManager, $output);
+        $worker->work();
     }
 }
